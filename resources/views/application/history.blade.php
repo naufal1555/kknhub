@@ -49,12 +49,15 @@
                         <td class="p-4">
                             <span class="font-medium text-slate-800">{{ $app->division->name }}</span>
                         </td>
-                        <td class="p-4 text-xs space-y-1">
+                        <td class="p-4 text-xs space-y-1.5">
                             @foreach($app->documents as $doc)
-                                <div>
-                                    <a href="{{ route('applications.documents.download', $doc->id) }}" target="_blank" class="text-[#0c365b] font-heading font-semibold hover:underline flex items-center gap-1">
-                                        <span class="px-1.5 py-0.5 bg-slate-100 border rounded text-[10px] text-slate-700">PDF</span>
-                                        <span>{{ strtoupper($doc->document_type) }}</span>
+                                <div class="flex items-center gap-1.5">
+                                    <a href="{{ route('applications.documents.download', [$doc->id, 'download' => 1]) }}" download class="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-[#083d62] text-slate-700 hover:text-white border border-slate-200 rounded-lg text-xs font-heading font-semibold transition" title="Unduh {{ strtoupper($doc->document_type) }}">
+                                        <svg class="w-3 h-3 fill-none stroke-current stroke-2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                        <span>Unduh {{ strtoupper($doc->document_type) }}</span>
+                                    </a>
+                                    <a href="{{ route('applications.documents.download', $doc->id) }}" target="_blank" class="text-[11px] text-slate-400 hover:text-[#083d62] hover:underline">
+                                        Lihat
                                     </a>
                                 </div>
                             @endforeach

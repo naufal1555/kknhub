@@ -103,15 +103,20 @@
                                 {{ $app->division->name }}
                             </span>
                         </td>
-                        <td class="p-4 text-xs space-y-1">
-                            @foreach($app->documents as $doc)
-                                <div>
-                                    <a href="{{ route('applications.documents.download', $doc->id) }}" target="_blank" class="text-[#0c365b] hover:underline flex items-center gap-1 font-heading font-semibold">
-                                        <span class="px-1.5 py-0.5 bg-slate-100 border rounded text-[10px] text-slate-700">PDF</span>
-                                        <span>{{ strtoupper($doc->document_type) }}</span>
+                        <td class="p-4 text-xs space-y-2">
+                            @forelse($app->documents as $doc)
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-1.5">
+                                    <a href="{{ route('applications.documents.download', [$doc->id, 'download' => 1]) }}" download class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#083d62] hover:bg-[#052942] text-white rounded-lg text-xs font-heading font-bold shadow-sm transition whitespace-nowrap" title="Unduh berkas {{ strtoupper($doc->document_type) }} pelamar">
+                                        <svg class="w-3.5 h-3.5 fill-none stroke-current stroke-2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                        <span>Unduh {{ strtoupper($doc->document_type) }}</span>
+                                    </a>
+                                    <a href="{{ route('applications.documents.download', $doc->id) }}" target="_blank" class="text-[11px] text-slate-500 hover:text-[#083d62] hover:underline font-sans inline-block" title="Buka PDF di tab baru">
+                                        Lihat
                                     </a>
                                 </div>
-                            @endforeach
+                            @empty
+                                <span class="text-xs text-slate-400 italic">Tidak ada berkas</span>
+                            @endforelse
                         </td>
                         <td class="p-4">
                             <span class="px-2.5 py-1 rounded-full text-xs font-heading font-bold

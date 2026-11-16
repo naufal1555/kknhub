@@ -42,7 +42,7 @@
                     <span class="text-xs font-heading font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                         Periode: {{ $catalog->team->period }}
                     </span>
-                    <span class="text-xs font-heading font-semibold px-3 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
+                    <span class="text-xs font-heading font-semibold px-3 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 whitespace-nowrap inline-flex items-center">
                         Batas Pendaftaran: {{ $catalog->deadline->format('d M Y, H:i') }} WIB
                     </span>
                 </div>
