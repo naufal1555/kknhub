@@ -110,15 +110,11 @@
             @forelse($catalogs as $catalog)
                 <div class="bg-white border border-slate-200 hover:border-[#083d62]/50 rounded-2xl p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
                     <div class="space-y-3">
-                        <!-- Header Kartu: Baris Lokasi & Batas Waktu Bebas Tumpang Tindih -->
-                        <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
-                            <span class="inline-flex items-center gap-1.5 text-xs font-heading font-semibold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 max-w-full truncate">
+                        <!-- Lokasi Pengabdian -->
+                        <div class="flex items-center pb-1">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-heading font-semibold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 max-w-full">
                                 <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                 <span class="truncate">Lokasi: {{ $catalog->team->target_location }}</span>
-                            </span>
-                            <span class="inline-flex items-center gap-1.5 text-xs font-heading font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-lg whitespace-nowrap flex-shrink-0">
-                                <svg class="w-3.5 h-3.5 text-rose-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                <span>Batas: {{ $catalog->deadline->format('d M Y') }}</span>
                             </span>
                         </div>
 
@@ -130,6 +126,14 @@
                             <div class="text-xs font-sans font-semibold text-[#083d62] mt-1">
                                 {{ $catalog->team->name }}
                             </div>
+                        </div>
+
+                        <!-- Batas Waktu Pendaftaran (Seragam di Bawah Judul) -->
+                        <div class="flex items-center pt-0.5">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-heading font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-lg">
+                                <svg class="w-3.5 h-3.5 text-rose-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                <span>Batas: {{ $catalog->deadline->format('d M Y') }}</span>
+                            </span>
                         </div>
 
                         @if($catalog->description)
