@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Models\PicRegistration;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -53,12 +54,13 @@ class AuthController extends Controller
     public function register(RegisterRequest $request): RedirectResponse
     {
         $validated = $request->validated();
+        $isPicRegistration = ($validated['registration_type'] ?? 'mahasiswa') === 'pic';
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role' => 'mahasiswa', // Default pendaftaran adalah mahasiswa
+            'role' => 'mahasiswa', // Mulai sebagai mahasiswa sambil menunggu approval PIC oleh administrator
             'nim' => $validated['nim'] ?? null,
             'faculty' => $validated['faculty'] ?? null,
             'major' => $validated['major'] ?? null,
@@ -67,7 +69,21 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('catalog.index')->with('success', 'Pendaftaran akun berhasil!');
+        if ($isPicRegistration) {
+            PicRegistration::create([
+                'user_id' => $user->id,
+                'proposed_team_name' => $validated['proposed_team_name'],
+                'target_location' => $validated['target_location'],
+                'period' => $validated['period'],
+                'description' => $validated['team_description'] ?? null,
+                'status' => 'pending',
+            ]);
+
+            return redirect()->route('applications.history')
+                ->with('success', "Pendaftaran akun dan pengajuan Tim KKN '{$validated['proposed_team_name']}' berhasil! Tim Anda sedang dalam antrean verifikasi Administrator DPkM.");
+        }
+
+        return redirect()->route('catalog.index')->with('success', 'Pendaftaran akun mahasiswa berhasil!');
     }
 
     public function logout(Request $request): RedirectResponse

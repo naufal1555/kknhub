@@ -70,4 +70,82 @@ class EmailDomainValidationTest extends TestCase
         $response->assertSessionHasErrors('email');
         $this->assertGuest();
     }
+
+    public function test_registration_as_pic_from_any_region_creates_pending_pic_registration(): void
+    {
+        $email = 'pic.flores@ugm.ac.id';
+
+        $response = $this->post(route('register.post'), [
+            'registration_type' => 'pic',
+            'name' => 'Maria Flores',
+            'email' => $email,
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'nim' => '21/480000/GE/53000',
+            'faculty' => 'Fakultas Geografi',
+            'major' => 'Pembangunan Wilayah',
+            'phone_number' => '081234567899',
+            'proposed_team_name' => 'KKN-PPM Unit Flores Timur 2026',
+            'target_location' => 'Larantuka, Flores Timur, NTT',
+            'period' => 'Antar Semester 2026',
+            'team_description' => 'Program ekowisata bahari dan mitigasi kekeringan pesisir Flores Timur.',
+        ]);
+
+        $response->assertRedirect(route('applications.history'));
+        $this->assertDatabaseHas('users', [
+            'email' => $email,
+            'role' => 'mahasiswa',
+        ]);
+
+        $user = User::where('email', $email)->first();
+        $this->assertDatabaseHas('pic_registrations', [
+            'user_id' => $user->id,
+            'proposed_team_name' => 'KKN-PPM Unit Flores Timur 2026',
+            'target_location' => 'Larantuka, Flores Timur, NTT',
+            'status' => 'pending',
+        ]);
+    }
+
+    public function test_admin_approving_pic_registration_upgrades_role_and_creates_team(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Testing',
+            'email' => 'admin.test@ugm.ac.id',
+            'password' => bcrypt('password123'),
+            'role' => 'admin',
+        ]);
+
+        $applicant = User::create([
+            'name' => 'Bintang Raja',
+            'email' => 'bintang.raja@ugm.ac.id',
+            'password' => bcrypt('password123'),
+            'role' => 'mahasiswa',
+        ]);
+
+        $reg = \App\Models\PicRegistration::create([
+            'user_id' => $applicant->id,
+            'proposed_team_name' => 'KKN-PPM Raja Ampat Lestari',
+            'target_location' => 'Misool, Raja Ampat, Papua Barat Daya',
+            'period' => 'Antar Semester 2026',
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($admin)
+            ->post(route('admin.pic-registrations.approve', $reg->id))
+            ->assertSessionHas('success');
+
+        $this->assertDatabaseHas('pic_registrations', [
+            'id' => $reg->id,
+            'status' => 'approved',
+        ]);
+
+        $this->assertDatabaseHas('kkn_teams', [
+            'pic_user_id' => $applicant->id,
+            'name' => 'KKN-PPM Raja Ampat Lestari',
+            'target_location' => 'Misool, Raja Ampat, Papua Barat Daya',
+        ]);
+
+        $applicant->refresh();
+        $this->assertEquals('pic', $applicant->role);
+    }
 }

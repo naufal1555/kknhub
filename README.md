@@ -30,15 +30,50 @@ Aplikasi ini dibangun menggunakan arsitektur modern berbasis **Laravel 12**, **T
 
 ## Kredensial Akun Pengujian (Seeder Default)
 
-Seluruh akun di bawah ini telah disiapkan melalui Database Seeder untuk pengujian alur peran secara langsung:
+Seluruh akun di bawah ini telah disiapkan melalui Database Seeder untuk pengujian alur peran dan sinkronisasi lintas peran secara langsung:
 
-| Peran | Alamat Email | Kata Sandi | Deskripsi Pengujian |
+| Peran | Alamat Email | Kata Sandi | Deskripsi Skenario Pengujian |
 | :--- | :--- | :--- | :--- |
-| **Administrator** | `admin@ugm.ac.id` | `password123` | Akses panel admin, verifikasi PIC, dan moderasi proposal katalog. |
-| **PIC Tim Sleman** | `pic.kkn@ugm.ac.id` | `password123` | PIC tim aktif dengan katalog terpublikasi (Unit Sleman Barat). |
-| **PIC Tim Kulon Progo** | `pic.kulonprogo@ugm.ac.id` | `password123` | PIC tim dengan katalog berstatus *Pending Approval* (siap di-approve Admin). |
-| **Mahasiswa Pelamar** | `mahasiswa@ugm.ac.id` | `password123` | Mahasiswa aktif yang telah melamar dan dapat menguji alur pembatalan. |
-| **Calon PIC (Pending)** | `calonpic2@ugm.ac.id` | `password123` | Mahasiswa pengaju PIC tim Gunungkidul (siap diverifikasi Admin). |
+| **Administrator DPkM** | `admin@ugm.ac.id` | `password123` | Akses panel admin, verifikasi calon PIC tim dari berbagai daerah, dan moderasi proposal katalog. |
+| **PIC Tim Sleman** | `pic.kkn@ugm.ac.id` | `password123` | PIC tim aktif (Unit Sleman Barat) dengan 2 pelamar pending yang menunggu seleksi di dasbor. |
+| **PIC Tim Raja Ampat** | `pic.rajaampat@ugm.ac.id` | `password123` | PIC tim aktif Unit Raja Ampat Bahari dengan katalog aktif terpublikasi di portal publik. |
+| **PIC Tim Karimunjawa** | `pic.karimunjawa@ugm.ac.id` | `password123` | PIC tim aktif Unit Karimunjawa Lestari dengan fokus konservasi mangrove dan kemaritiman. |
+| **PIC Tim Kulon Progo** | `pic.kulonprogo@ugm.ac.id` | `password123` | PIC tim dengan katalog berstatus *Pending Approval* (siap diuji moderasi dan di-approve oleh Admin). |
+| **Calon PIC Bantul (Pending)** | `calonpic@ugm.ac.id` | `password123` | Mahasiswa pengaju tim KKN-PPM Bantul Lestari (siap diuji approval di panel Verifikasi PIC Admin). |
+| **Calon PIC Gunungkidul (Pending)** | `calonpic2@ugm.ac.id` | `password123` | Mahasiswa pengaju tim KKN-PPM Gunungkidul Hijau (siap diuji verifikasi oleh Admin). |
+| **Mahasiswa Pelamar (Ahmad)** | `mahasiswa@ugm.ac.id` | `password123` | Mahasiswa yang telah melamar ke Unit Sleman Barat (dapat menguji alur pembatalan lamaran). |
+| **Mahasiswa Pelamar (Sarah)** | `sarah.mahasiswa@ugm.ac.id` | `password123` | Mahasiswa FEB yang melamar ke Divisi Pubdok Sleman Barat (berkas CV siap diunduh PIC). |
+| **Mahasiswa Baru (Bebas)** | `mhs.bebas@ugm.ac.id` | `password123` | Mahasiswa baru yang belum melamar dan belum mengajukan tim, siap menguji alur pendaftaran dari awal. |
+
+---
+
+## Panduan Uji Alur Sinkronisasi Sistem
+
+### Skenario 1: Pembuatan Akun PIC dari Daerah Mana Saja & Approval Admin
+1. Buka halaman `/register` peramban.
+2. Pilih peran pendaftaran: **Koordinator / PIC Tim**.
+3. Masukkan data diri mahasiswa serta informasi tim KKN baru (nama tim, lokasi pengabdian di daerah mana saja di Indonesia, periode, dan deskripsi).
+4. Klik **Daftar & Ajukan Tim KKN**. Akun akan masuk dan menampilkan kartu status *Menunggu Verifikasi Admin* di halaman `/my-applications`.
+5. Keluar dan masuk sebagai Administrator (`admin@ugm.ac.id` / `password123`), buka menu **Verifikasi PIC**.
+6. Klik tombol **Approve**.
+7. Masuk kembali ke akun pengaju PIC: status di riwayat berubah menjadi kartu hijau **Disetujui Admin**, menu navbar otomatis bertambah (*Panel PIC Tim*, *Kelola OPREC*, *Profil Tim*), dan pengguna dapat langsung membuka Dasbor PIC Tim.
+
+### Skenario 2: Pendaftaran Mahasiswa & Review Real-Time oleh PIC Tim
+1. Masuk sebagai mahasiswa (`mhs.bebas@ugm.ac.id` / `password123`).
+2. Buka menu **Katalog OPREC**, pilih salah satu tim (misal Unit Sleman Barat).
+3. Pilih divisi yang diinginkan, lampirkan berkas CV (PDF), dan klik **Kirim Berkas Lamaran**.
+4. Keluar dan masuk sebagai PIC tim terkait (`pic.kkn@ugm.ac.id` / `password123`).
+5. Pada **Dasbor PIC Tim**, kartu metrik *Menunggu Seleksi* dan kolom *Pelamar Masuk* otomatis memutakhirkan jumlah pelamar yang menunggu review.
+6. Klik **Review Pelamar**, klik **Unduh CV** untuk mengunduh dokumen PDF pelamar ke komputer lokal.
+7. Klik **Terima (Accept)** atau **Tolak (Reject)**.
+8. Masuk kembali ke akun mahasiswa: status seleksi di halaman **Lamaran Saya** langsung tersinkronisasi menjadi *ACCEPTED* atau *REJECTED*.
+
+### Skenario 3: Pengajuan Katalog oleh PIC & Moderasi Admin
+1. Masuk sebagai PIC (`pic.kulonprogo@ugm.ac.id` / `password123`).
+2. Katalog unit Kulon Progo saat ini berstatus *Pending Approval*.
+3. Masuk sebagai Administrator (`admin@ugm.ac.id` / `password123`), buka menu **Moderasi Katalog**.
+4. Tinjau proposal Kulon Progo dan klik **Setujui & Publikasikan**.
+5. Buka katalog publik (`/catalog`): katalog tim Kulon Progo langsung tayang secara otomatis dan siap dilamar oleh seluruh mahasiswa UGM.
 
 ---
 

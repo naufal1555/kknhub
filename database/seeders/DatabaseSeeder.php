@@ -490,5 +490,19 @@ class DatabaseSeeder extends Seeder
                 'status' => 'pending',
             ]
         );
+
+        // 13. Akun Mahasiswa Baru Bersih (Belum Melamar & Belum Mengajukan Tim)
+        User::firstOrCreate(
+            ['email' => 'mhs.bebas@ugm.ac.id'],
+            [
+                'name' => 'Budi Santoso',
+                'password' => bcrypt('password123'),
+                'role' => 'mahasiswa',
+                'nim' => '22/498888/SV/21888',
+                'faculty' => 'Sekolah Vokasi',
+                'major' => 'Sistem Informasi Akuntansi',
+                'phone_number' => '081299112233',
+            ]
+        );
     }
 }

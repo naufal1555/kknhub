@@ -4,6 +4,7 @@ namespace App\Http\Controllers\PIC;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PIC\StoreCatalogRequest;
+use App\Models\Application;
 use App\Models\KknTeam;
 use App\Models\OprecCatalog;
 use Illuminate\Http\RedirectResponse;
@@ -29,9 +30,43 @@ class CatalogManagementController extends Controller
         $team = $this->getPicTeam();
         $catalogs = $team->catalogs()->with('divisions')->latest()->get();
 
+        $catalogStats = [];
+        $totalQuotaAll = 0;
+        $totalApplicantsAll = 0;
+        $totalPendingAll = 0;
+        $totalAcceptedAll = 0;
+
+        foreach ($catalogs as $catalog) {
+            $divisionIds = $catalog->divisions->pluck('id');
+            $quota = $catalog->divisions->sum('quota');
+            $totalQuotaAll += $quota;
+
+            $totalApps = Application::whereIn('division_id', $divisionIds)->count();
+            $pendingApps = Application::whereIn('division_id', $divisionIds)->where('status', 'pending')->count();
+            $acceptedApps = Application::whereIn('division_id', $divisionIds)->where('status', 'accepted')->count();
+
+            $totalApplicantsAll += $totalApps;
+            $totalPendingAll += $pendingApps;
+            $totalAcceptedAll += $acceptedApps;
+
+            $catalogStats[$catalog->id] = [
+                'total_quota' => $quota,
+                'total_applicants' => $totalApps,
+                'pending_applicants' => $pendingApps,
+                'accepted_applicants' => $acceptedApps,
+            ];
+        }
+
         return view('pic.catalogs.index', [
             'team' => $team,
             'catalogs' => $catalogs,
+            'catalogStats' => $catalogStats,
+            'summary' => [
+                'total_quota' => $totalQuotaAll,
+                'total_applicants' => $totalApplicantsAll,
+                'total_pending' => $totalPendingAll,
+                'total_accepted' => $totalAcceptedAll,
+            ],
         ]);
     }
 

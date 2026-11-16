@@ -14,6 +14,7 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'registration_type' => ['nullable', 'in:mahasiswa,pic'],
             'name' => ['required', 'string', 'max:255'],
             'email' => [
                 'required',
@@ -28,6 +29,10 @@ class RegisterRequest extends FormRequest
             'faculty' => ['nullable', 'string', 'max:100'],
             'major' => ['nullable', 'string', 'max:100'],
             'phone_number' => ['nullable', 'string', 'max:20'],
+            'proposed_team_name' => ['required_if:registration_type,pic', 'nullable', 'string', 'max:255'],
+            'target_location' => ['required_if:registration_type,pic', 'nullable', 'string', 'max:255'],
+            'period' => ['required_if:registration_type,pic', 'nullable', 'string', 'max:100'],
+            'team_description' => ['nullable', 'string', 'max:1000'],
         ];
     }
 
@@ -36,6 +41,9 @@ class RegisterRequest extends FormRequest
         return [
             'email.regex' => 'Hanya email resmi dengan domain @ugm.ac.id yang diizinkan untuk registrasi akun.',
             'email.unique' => 'Email ini sudah terdaftar pada sistem KKNHub.',
+            'proposed_team_name.required_if' => 'Nama tim KKN wajib diisi jika mendaftar sebagai Koordinator / PIC Tim.',
+            'target_location.required_if' => 'Lokasi target pengabdian wajib diisi jika mendaftar sebagai Koordinator / PIC Tim.',
+            'period.required_if' => 'Periode pelaksanaan KKN wajib diisi jika mendaftar sebagai Koordinator / PIC Tim.',
         ];
     }
 }

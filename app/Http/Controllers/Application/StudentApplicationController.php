@@ -70,9 +70,10 @@ class StudentApplicationController extends Controller
             return redirect()->route('admin.dashboard')->with('info', 'Akun Administrator tidak memiliki riwayat lamaran mahasiswa.');
         }
 
-        if ($user->isPic()) {
-            return redirect()->route('pic.dashboard')->with('info', 'Akun PIC tidak memiliki riwayat lamaran mahasiswa.');
-        }
+        $picRegistration = \App\Models\PicRegistration::with('team')
+            ->where('user_id', $user->id)
+            ->latest()
+            ->first();
 
         $applications = Application::with(['team', 'division', 'documents'])
             ->where('user_id', $user->id)
@@ -81,6 +82,8 @@ class StudentApplicationController extends Controller
 
         return view('application.history', [
             'applications' => $applications,
+            'picRegistration' => $picRegistration,
+            'user' => $user,
         ]);
     }
 
